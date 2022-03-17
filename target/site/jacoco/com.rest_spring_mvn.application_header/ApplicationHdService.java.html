@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ApplicationHdService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bulk_loader</a> &gt; <a href="index.source.html" class="el_package">com.rest_spring_mvn.application_header</a> &gt; <span class="el_source">ApplicationHdService.java</span></div><h1>ApplicationHdService.java</h1><pre class="source lang-java linenums">package com.rest_spring_mvn.application_header;
+
+import com.rest_spring_mvn.entity.ApplicationHd;
+import com.rest_spring_mvn.mapper.TextFileReader;
+import com.rest_spring_mvn.repository.ApplicationHdRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+<span class="fc" id="L18">@Slf4j</span>
+<span class="fc" id="L19">public class ApplicationHdService {</span>
+    @Autowired
+    TextFileReader&lt;ApplicationHd&gt; textFileReader;
+
+    @Autowired
+    ApplicationHdRepository applicationHdRepository;
+
+    public List&lt;ApplicationHd&gt; get() {
+<span class="fc" id="L27">        return applicationHdRepository.findTop10By();</span>
+    }
+
+    public List&lt;ApplicationHd&gt; getAll() {
+<span class="nc" id="L31">        return applicationHdRepository.findTop20By();</span>
+    }
+
+    public List&lt;ApplicationHd&gt; post(MultipartFile mFile) throws IOException {
+<span class="fc" id="L35">        Path temp = Files.createTempFile(&quot;ApplicationHd_&quot;, &quot;.txt&quot;);</span>
+<span class="fc" id="L36">        mFile.transferTo(temp);</span>
+<span class="fc" id="L37">        List&lt;ApplicationHd&gt; apps =</span>
+<span class="fc" id="L38">                applicationHdRepository.saveAllAndFlush(textFileReader.supplier(temp).get().collect(Collectors.toList()));</span>
+<span class="pc bpc" id="L39" title="1 of 2 branches missed.">        if (!Files.deleteIfExists(temp)) log.info(&quot;File doesn't exist.&quot;);</span>
+<span class="fc" id="L40">        return apps.subList(0, 10);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>
