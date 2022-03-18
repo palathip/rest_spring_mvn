@@ -15,7 +15,6 @@ public class ApplicationToken {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     Long id;
-    String token;
     String effectiveDate;
     String expireDate;
     String userName;
@@ -25,6 +24,4 @@ public class ApplicationToken {
     String engFirstName;
     String engLastName;
     String mobilePhone;
-    String responseCode;
-    String responseDesc;
 }

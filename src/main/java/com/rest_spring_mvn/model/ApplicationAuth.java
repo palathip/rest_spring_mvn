@@ -1,4 +1,4 @@
-package com.rest_spring_mvn.entity;
+package com.rest_spring_mvn.model;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

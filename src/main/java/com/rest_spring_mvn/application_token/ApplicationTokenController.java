@@ -1,16 +1,16 @@
 package com.rest_spring_mvn.application_token;
 
-import com.fasterxml.jackson.databind.util.JSONPObject;
-import com.rest_spring_mvn.entity.ApplicationAuth;
+import com.rest_spring_mvn.model.ApplicationAuth;
 import com.rest_spring_mvn.entity.ApplicationToken;
+import com.rest_spring_mvn.model.ApplicationData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 //https://stackoverflow.com/questions/53803780/tests-in-spring-boot-with-database-h2
@@ -24,19 +24,17 @@ public class ApplicationTokenController {
     ApplicationTokenService applicationTokenService;
 
     @GetMapping("/user_data")
-    public ResponseEntity<List<ApplicationToken>> applicationTokenGet(@RequestBody ApplicationAuth applicationAuth) {
-        return new ResponseEntity(applicationAuth, HttpStatus.OK);
+    public ResponseEntity<List<ApplicationToken>> applicationTokenGet() {
+        return new ResponseEntity(applicationTokenService.getAll(), HttpStatus.OK);
     }
 
     @PostMapping("/add")
-    public ResponseEntity<List<ApplicationToken>> applicationHeaderAll() {
-
-        return new ResponseEntity("waiting result", HttpStatus.OK);
+    public ResponseEntity<List<ApplicationToken>> applicationHeaderAll(@RequestBody ApplicationToken applicationToken) throws NoSuchAlgorithmException {
+        return new ResponseEntity(applicationTokenService.post(applicationToken), HttpStatus.OK);
     }
 
     @PostMapping("/token")
-    public ResponseEntity<List<ApplicationToken>> applicationHeader(
-            @RequestBody JSONPObject auth) throws IOException {
-        return new ResponseEntity("waiting result", HttpStatus.OK);
+    public ResponseEntity<List<ApplicationData>> applicationHeader(@RequestBody ApplicationAuth applicationAuth) throws IOException, NoSuchAlgorithmException {
+        return new ResponseEntity(applicationTokenService.getAuth(applicationAuth), HttpStatus.OK);
     }
 }
