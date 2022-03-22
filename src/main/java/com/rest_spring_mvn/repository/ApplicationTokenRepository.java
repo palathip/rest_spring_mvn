@@ -11,4 +11,5 @@ import java.util.List;
 public interface ApplicationTokenRepository extends JpaRepository<ApplicationToken, Long> {
     List<ApplicationToken> findByUserNameEquals(String username);
     List<ApplicationToken> findByPassWordEquals(String username);
+    List<ApplicationToken> findByOpenIdEquals(String username);
 }

@@ -1,9 +1,11 @@
 package com.rest_spring_mvn.application_token;
 
+import com.mashape.unirest.http.exceptions.UnirestException;
 import com.rest_spring_mvn.model.ApplicationAuth;
 import com.rest_spring_mvn.entity.ApplicationToken;
 import com.rest_spring_mvn.model.ApplicationData;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +19,7 @@ import java.util.List;
 //https://nordicapis.com/10-best-practices-for-naming-api-endpoints/
 @RestController
 @Slf4j
-@RequestMapping(path = "/v1/auth")
+@RequestMapping(path = "/api/v1/auth")
 public class ApplicationTokenController {
 
     @Autowired
@@ -36,5 +38,10 @@ public class ApplicationTokenController {
     @PostMapping("/token")
     public ResponseEntity<List<ApplicationData>> applicationHeader(@RequestBody ApplicationAuth applicationAuth) throws IOException, NoSuchAlgorithmException {
         return new ResponseEntity(applicationTokenService.getAuth(applicationAuth), HttpStatus.OK);
+    }
+
+    @GetMapping("/oidc/decoder/token")
+    public ResponseEntity<JSONObject> applicationDecoder(@RequestParam String code) throws UnirestException {
+        return new ResponseEntity(applicationTokenService.decoder(code),HttpStatus.OK);
     }
 }

@@ -1,15 +1,21 @@
 package com.rest_spring_mvn.application_token;
-
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import com.rest_spring_mvn.model.ApplicationAuth;
 import com.rest_spring_mvn.entity.ApplicationToken;
 import com.rest_spring_mvn.model.ApplicationData;
 import com.rest_spring_mvn.repository.ApplicationTokenRepository;
 import com.rest_spring_mvn.util.MD5;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import java.util.List;
+
 
 @Service
 @Slf4j
@@ -57,6 +63,53 @@ public class ApplicationTokenService {
         }
         else
             return "username already exit";
+    }
+
+    public Object decoder (String code) throws UnirestException {
+
+        Unirest.setTimeouts(0, 0);
+        HttpResponse<String> response = Unirest.post("http://192.168.1.37:8080/oauth2/token?" +
+                        "grant_type=authorization_code" +
+                        "&code=" + code +
+                        "&scope=openid" +
+                        "&redirect_uri=http://localhost:8080/api/v1/auth/oidc/decoder/token")
+                .header("Authorization", "Basic aWFtLWlkOmlhbS1zZWNyZXQ=")
+                .asString();
+        JSONObject responseData = new JSONObject(response.getBody());
+        String token = (String) responseData.get("access_token");
+
+        String[] stringList = token.split("\\.");
+        Base64.Decoder decoder = Base64.getUrlDecoder();
+        String payload = new String(decoder.decode(stringList[1]));
+        System.out.println(payload);
+        JSONObject information = new JSONObject(payload);
+
+        List<ApplicationToken> checkUsername = applicationHdRepository.findByOpenIdEquals((String) information.get("sub"));
+        if (checkUsername.isEmpty()) {
+            ApplicationToken oidcData = new ApplicationToken();
+            oidcData.setOpenId((String) information.get("sub"));
+            applicationHdRepository.saveAndFlush(oidcData);
+            return getAuthByOpenId((String) information.get("sub"));
+        }
+        else{
+            return getAuthByOpenId((String) information.get("sub"));
+    }
+    }
+
+    public Object getAuthByOpenId(String openId) {
+        List<ApplicationToken> userData = applicationHdRepository.findByOpenIdEquals(openId);
+        if(!userData.isEmpty()) {
+            ApplicationData applicationData = new ApplicationData();
+            applicationData.setToken("DUMMY_TOKEN");
+            applicationData.setEffectiveDate(userData.get(0).getEffectiveDate());
+            applicationData.setExpireDate(userData.get(0).getExpireDate());
+            applicationData.setResponseCode("S00001");
+            applicationData.setResponseDesc("Your password expires, please change password within extended date.");
+            return applicationData;
+        }
+        else {
+            return userData;
+        }
     }
 
 }

@@ -18,6 +18,7 @@ public class ApplicationToken {
     String effectiveDate;
     String expireDate;
     String userName;
+    String openId;
     String passWord;
     String thaiFirstName;
     String thaiLastName;
