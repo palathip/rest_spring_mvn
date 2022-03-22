@@ -13,8 +13,12 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
+import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
 
 
 @Service
@@ -45,6 +49,12 @@ public class ApplicationTokenService {
                 applicationData.setMobilePhone(userData.get(0).getMobilePhone());
                 applicationData.setResponseCode("S00001");
                 applicationData.setResponseDesc("Your password expires, please change password within extended date.");
+                HashMap <String,String> system = new HashMap();
+                system.put("systemId","S0014");
+                system.put("systemName","IAM");
+                ArrayList systemList = new ArrayList();
+                systemList.add(system);
+                applicationData.setSystemList(systemList);
                 return applicationData;
             }
             else {
@@ -58,6 +68,9 @@ public class ApplicationTokenService {
         if (checkUsername.isEmpty()) {
             String mdHash = MD5.getMD5(applicationToken.getPassWord());
             applicationToken.setPassWord(mdHash);
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            LocalDateTime now = LocalDateTime.now();
+            applicationToken.setEffectiveDate(dtf.format(now));
             applicationHdRepository.saveAndFlush(applicationToken);
             return applicationToken;
         }
@@ -68,7 +81,7 @@ public class ApplicationTokenService {
     public Object decoder (String code) throws UnirestException {
 
         Unirest.setTimeouts(0, 0);
-        HttpResponse<String> response = Unirest.post("http://192.168.1.37:8080/oauth2/token?" +
+        HttpResponse<String> response = Unirest.post("https://boombibu-oidc-server.herokuapp.com/oauth2/token?" +
                         "grant_type=authorization_code" +
                         "&code=" + code +
                         "&scope=openid" +
@@ -76,6 +89,7 @@ public class ApplicationTokenService {
                 .header("Authorization", "Basic aWFtLWlkOmlhbS1zZWNyZXQ=")
                 .asString();
         JSONObject responseData = new JSONObject(response.getBody());
+        System.out.println(response.getBody());
         String token = (String) responseData.get("access_token");
 
         String[] stringList = token.split("\\.");
@@ -88,6 +102,9 @@ public class ApplicationTokenService {
         if (checkUsername.isEmpty()) {
             ApplicationToken oidcData = new ApplicationToken();
             oidcData.setOpenId((String) information.get("sub"));
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            LocalDateTime now = LocalDateTime.now();
+            oidcData.setEffectiveDate(dtf.format(now));
             applicationHdRepository.saveAndFlush(oidcData);
             return getAuthByOpenId((String) information.get("sub"));
         }
@@ -103,8 +120,15 @@ public class ApplicationTokenService {
             applicationData.setToken("DUMMY_TOKEN");
             applicationData.setEffectiveDate(userData.get(0).getEffectiveDate());
             applicationData.setExpireDate(userData.get(0).getExpireDate());
+            applicationData.setOpenId(userData.get(0).getOpenId());
             applicationData.setResponseCode("S00001");
             applicationData.setResponseDesc("Your password expires, please change password within extended date.");
+            HashMap <String,String> system = new HashMap();
+            system.put("systemId","S0014");
+            system.put("systemName","IAM");
+            ArrayList systemList = new ArrayList();
+            systemList.add(system);
+            applicationData.setSystemList(systemList);
             return applicationData;
         }
         else {

@@ -16,6 +16,7 @@ public class ApplicationData
     String token;
     String effectiveDate;
     String expireDate;
+    String openId;
     String userName;
     String thaiFirstName;
     String thaiLastName;
