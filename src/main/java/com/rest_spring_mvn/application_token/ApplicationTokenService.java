@@ -48,7 +48,7 @@ public class ApplicationTokenService {
                 applicationData.setEngLastName(userData.get(0).getEngLastName());
                 applicationData.setMobilePhone(userData.get(0).getMobilePhone());
                 applicationData.setResponseCode("S00001");
-                applicationData.setResponseDesc("Your password expires, please change password within extended date.");
+                applicationData.setResponseDesc("Success");
                 HashMap <String,String> system = new HashMap();
                 system.put("systemId","S0014");
                 system.put("systemName","IAM");
@@ -70,7 +70,9 @@ public class ApplicationTokenService {
             applicationToken.setPassWord(mdHash);
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             LocalDateTime now = LocalDateTime.now();
+            LocalDateTime exp = LocalDateTime.now().plusYears(1);
             applicationToken.setEffectiveDate(dtf.format(now));
+            applicationToken.setExpireDate(dtf.format(exp));
             applicationHdRepository.saveAndFlush(applicationToken);
             return applicationToken;
         }
@@ -104,7 +106,9 @@ public class ApplicationTokenService {
             oidcData.setOpenId((String) information.get("sub"));
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             LocalDateTime now = LocalDateTime.now();
+            LocalDateTime exp = LocalDateTime.now().plusYears(1);
             oidcData.setEffectiveDate(dtf.format(now));
+            oidcData.setExpireDate(dtf.format(exp));
             applicationHdRepository.saveAndFlush(oidcData);
             return getAuthByOpenId((String) information.get("sub"));
         }
@@ -122,7 +126,7 @@ public class ApplicationTokenService {
             applicationData.setExpireDate(userData.get(0).getExpireDate());
             applicationData.setOpenId(userData.get(0).getOpenId());
             applicationData.setResponseCode("S00001");
-            applicationData.setResponseDesc("Your password expires, please change password within extended date.");
+            applicationData.setResponseDesc("Success");
             HashMap <String,String> system = new HashMap();
             system.put("systemId","S0014");
             system.put("systemName","IAM");
