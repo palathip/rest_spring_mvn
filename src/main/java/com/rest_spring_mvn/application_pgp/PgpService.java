@@ -7,6 +7,7 @@ import org.pgpainless.PGPainless;
 import org.pgpainless.decryption_verification.ConsumerOptions;
 import org.pgpainless.decryption_verification.DecryptionStream;
 import org.pgpainless.key.protection.SecretKeyRingProtector;
+import org.pgpainless.util.Passphrase;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
@@ -19,8 +20,6 @@ public class PgpService {
 
     public String pgpDecrypt() throws IOException, PGPException {
     String input = "-----BEGIN PGP MESSAGE-----\n" +
-            "Version: OpenPGP v2.0.8\n" +
-            "Comment: https://sela.io/pgp/\n" +
             "\n" +
             "wcBMAwiXxe7zcZA+AQf9HP0zzTaCG9Fw+RqdvqbHMgHZjHBJ2RZ1wlPnD2Az8Qub\n" +
             "nxyvOo5s8GCxAOncBMH1N8MBTL0YznM9QCPvP3TAV0S3md6Bpy/VvIJjgUV4LmL9\n" +
@@ -171,27 +170,27 @@ public class PgpService {
             "=GbAt\n" +
             "-----END PGP PRIVATE KEY BLOCK-----";
 
-    SecretKeyRingProtector keyProtector = SecretKeyRingProtector.unprotectedKeys();
+    SecretKeyRingProtector keyProtector = SecretKeyRingProtector.unlockAnyKeyWith(Passphrase.fromPassword("12345678"));
     ByteArrayInputStream encryptedInputStream = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
     PGPSecretKeyRing bobSecKeys = PGPainless.readKeyRing().secretKeyRing(key);
 
+        ConsumerOptions consumerOptions = new ConsumerOptions()
+                .addDecryptionKey(bobSecKeys, keyProtector); // add the decryption key ring
+
         System.out.println(input);
         System.out.println(key);
-        System.out.println(keyProtector.hasPassphraseFor(12345678L));
 
     ByteArrayOutputStream plaintextOut = new ByteArrayOutputStream();
 
     DecryptionStream decryptionStream = PGPainless.decryptAndOrVerify()
             .onInputStream(encryptedInputStream)
-            .withOptions(new ConsumerOptions()
-                    .addDecryptionKey(bobSecKeys, keyProtector)
-            );
+            .withOptions(consumerOptions);
         Streams.pipeAll(decryptionStream, plaintextOut);
         decryptionStream.close();
 
     // Result contains information like signature status etc.
-    String metadata = plaintextOut.toString();
 
-        return metadata;
+        System.out.println("Decrypt Data is : " +plaintextOut.toString());
+        return plaintextOut.toString();
 }
 }
