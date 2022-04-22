@@ -5,13 +5,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.persistence.Table;
+
 @Getter
 @Setter
 @ToString
 @RequiredArgsConstructor
-public class ApplicationAuth {
-    String username;
-    String password;
-    String zone;
-    String system;
+@Table(name = "USER_DETAIL")
+public class ApplicationConnect {
+    
 }

@@ -18,6 +18,15 @@ spring:
     hibernate.ddl-auto: create-drop
     #    hibernate.ddl-auto: update
     #    defer-datasource-initialization: true
+
+    driver-class-name: oracle.jdbc.OracleDriver
+    url: jdbc:oracle:thin:@dbcondev3.aycap.bayad.co.th:1557:dbdev03
+    username: IBB_KBRO_S
+    password: ibb_pass123#_ksit
+    hikari:
+      connection-timeout: 60000
+      maximum-pool-size: 2
+
   h2:
     console:
       enabled: true
