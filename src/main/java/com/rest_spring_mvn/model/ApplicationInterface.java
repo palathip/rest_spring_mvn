@@ -55,5 +55,4 @@ public class ApplicationInterface {
     String campingn_code;
     List<InsuredPerson> insured_person;
     OmiseResult payment_detail;
-
 }
