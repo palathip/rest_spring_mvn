@@ -1,5 +1,6 @@
 package com.rest_spring_mvn.model;
 
+import com.rest_spring_mvn.model.omise_result.OmiseResult;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -53,6 +54,5 @@ public class ApplicationInterface {
     Date selling_date;
     String campingn_code;
     List<InsuredPerson> insured_person;
-    List payment_detail;
-
+    OmiseResult payment_detail;
 }
