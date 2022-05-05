@@ -7,12 +7,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("api/v1/application-interface-header")
 public class AppInterfaceHd {
 
     @PostMapping("post")
-    public ApplicationInterface postInterface (@RequestBody ApplicationInterface applicationInterface){
+    public List<ApplicationInterface> postInterface (@RequestBody List<ApplicationInterface> applicationInterface){
         return applicationInterface;
     }
 }
