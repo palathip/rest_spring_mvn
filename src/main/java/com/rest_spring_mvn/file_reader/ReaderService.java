@@ -53,7 +53,14 @@ public class ReaderService {
                     if (indexValue == 0 && !cellValue.isEmpty()) preCommand.append(cellValue).append(",");
 
                     if (indexValue > 0) {
-                        postCommand.append(cellValue).append(",");
+                        try {
+                            Double.parseDouble(cellValue);
+                            postCommand.append(cellValue).append(",");
+
+                        } catch (NumberFormatException nfe) {
+                            postCommand.append("'").append(cellValue).append("'").append(",");
+                        }
+
                     }
 
 //                    log.info(cellValue + "\t");
@@ -61,7 +68,7 @@ public class ReaderService {
                 indexValue += 1;
 
                 postCommand.replace(postCommand.length()-1,postCommand.length(),");");
-                System.out.println(String.valueOf(postCommand));
+                System.out.println(postCommand);
             }
         }
         SqlReaderResult res = new SqlReaderResult();
