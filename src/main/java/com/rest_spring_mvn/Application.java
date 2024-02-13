@@ -3,12 +3,14 @@ package com.rest_spring_mvn;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.filter.CommonsRequestLoggingFilter;
 
 import javax.annotation.PostConstruct;
 import java.util.TimeZone;
 
 @SpringBootApplication
+@EnableAsync
 public class Application {
 
     public static void main(String[] args) {
